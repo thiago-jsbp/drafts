@@ -44,7 +44,7 @@ def image_paths(extensions=('gif', 'jpeg', 'jpg', 'png')):
         print(format_exc())
 
 
-def oscar_mike(from_path, to_path, min_pixels=100*100):
+def oscar_mike(from_path, to_path, min_pixels=100*100, force_ratio=False, hash_first=True):
     """
     """
 
@@ -58,12 +58,16 @@ def oscar_mike(from_path, to_path, min_pixels=100*100):
                             + d + '%h' + d + '%m" "' + from_path + '"')
 
         img_w, img_h, img_fmt = img_data.split(d)
-        assert int(img_w) * int(img_h) > min_pixels
+        assert int(img_w) * int(img_h) >= min_pixels
+        if force_ratio:
+            assert int(img_w) / int(img_h) <= 2
 
         img_dim = img_w + 'x' + img_h
-        #mv_params = from_path, to_path + '/' + '.'.join([img_dim, img_hash, img_fmt])
-        mv_params = from_path, to_path + '/' + '.'.join([img_hash, img_dim, img_fmt])
-        
+        if hash_first:
+            mv_params = from_path, to_path + '/' + '.'.join([img_hash, img_dim, img_fmt])
+        else:
+            mv_params = from_path, to_path + '/' + '.'.join([img_dim, img_hash, img_fmt])
+
         rename(*mv_params)
         return mv_params
 
